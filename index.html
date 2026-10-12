@@ -113,12 +113,12 @@
         <div class="field">
           <label for="employee">Employee Name · اسم الموظف *</label>
           <select id="employee" required><option value="">Loading…</option></select>
-          <div class="hint">Name not listed? Contact Admin · اسمك مش موجود؟ تواصل مع الإدارة</div>
+          <div class="hint">Name not listed? Contact Admin · إذا لم يظهر اسمك، يُرجى التواصل مع الإدارة</div>
         </div>
 
         <div class="row">
           <div class="field">
-            <label>Chalet / Villa · الشاليه</label>
+            <label>Chalet / Villa · الشاليه / الفيلا</label>
             <input id="chalet" class="readonly" readonly placeholder="Automatic">
           </div>
           <div class="field">
@@ -128,12 +128,12 @@
         </div>
 
         <div class="field">
-          <label>Unit Location · لوكيشن الوحدة</label>
+          <label>Unit Location · موقع الوحدة</label>
           <div class="locbox">
-            <button type="button" class="locbtn" id="locBtn">📍 Use my current location · خد موقعي الحالي</button>
-            <div class="hint" style="text-align:center">Press it while you are inside the unit · اضغط وأنت جوه الوحدة</div>
+            <button type="button" class="locbtn" id="locBtn">📍 Use my current location · تحديد موقعي الحالي</button>
+            <div class="hint" style="text-align:center">Press it while you are inside the unit · يُرجى الضغط أثناء وجودك داخل الوحدة</div>
             <div class="or">— or · أو —</div>
-            <input id="locLink" inputmode="url" placeholder="Paste Google Maps link · الصق لينك اللوكيشن">
+            <input id="locLink" inputmode="url" placeholder="Paste Google Maps link · الصق رابط الموقع">
             <div class="locstatus" id="locStatus"></div>
           </div>
         </div>
@@ -163,7 +163,7 @@
         <div class="field">
           <label for="description">Details · تفاصيل الطلب *</label>
           <textarea id="description" required maxlength="1500"
-            placeholder="What is the problem? Where exactly? Since when?&#10;إيه المشكلة؟ فين بالظبط؟ من إمتى؟"></textarea>
+            placeholder="What is the problem? Where exactly? Since when?&#10;ما المشكلة؟ وأين مكانها تحديدًا؟ ومنذ متى؟"></textarea>
         </div>
 
         <div class="field">
@@ -174,9 +174,9 @@
 
         <div class="section">Contact · التواصل</div>
         <div class="field">
-          <label for="phone">Mobile Number · رقم الموبايل *</label>
+          <label for="phone">Mobile Number · رقم الهاتف المحمول *</label>
           <input id="phone" type="tel" required inputmode="tel" maxlength="20" placeholder="01xxxxxxxxx">
-          <div class="hint">Keep it — you need it to track your request · هتحتاجه لمتابعة الطلب</div>
+          <div class="hint">Keep it — you need it to track your request · ستحتاج إليه لمتابعة الطلب</div>
         </div>
 
         <button id="submitButton" class="main" type="submit">Submit Request · إرسال الطلب</button>
@@ -191,7 +191,7 @@
           <input id="trackId" required placeholder="SR-26-0001" style="text-transform:uppercase">
         </div>
         <div class="field">
-          <label for="trackPhone">Mobile used in the request · الموبايل المسجل في الطلب *</label>
+          <label for="trackPhone">Mobile used in the request · رقم الهاتف المسجّل في الطلب *</label>
           <input id="trackPhone" type="tel" required inputmode="tel" maxlength="20">
         </div>
         <button id="trackButton" class="main" type="submit">Check Status · عرض الحالة</button>
@@ -211,22 +211,22 @@
   /* ▲▲▲  nothing else needs to change in this file  ▲▲▲ */
   async function api(action, payload) {
     if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(API_URL.trim()))
-      throw new Error('Setup not finished: API link missing in index.html · لم يتم وضع لينك الـ API');
+      throw new Error('Setup not finished: API link missing in index.html · لم يكتمل إعداد النظام');
     let res;
     try {
       res = await fetch(API_URL.trim(), { method: 'POST', redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: action, payload: payload || {} }) });
-    } catch (e) { throw new Error('No connection. Check internet and try again · تأكد من الإنترنت وحاول تاني'); }
+    } catch (e) { throw new Error('No connection. Check internet and try again · يُرجى التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى'); }
     let out;
-    try { out = await res.json(); } catch (e) { throw new Error('Server error. Try again later · حاول بعد شوية'); }
+    try { out = await res.json(); } catch (e) { throw new Error('Server error. Try again later · يُرجى المحاولة بعد قليل'); }
     if (!out.ok) throw new Error(out.error || 'Error');
     return out.data;
   }
   const $ = id => document.getElementById(id);
   let categories = {}, photoB64 = null, lastData = null;
   const SUBMIT_LABEL = 'Submit Request · إرسال الطلب';
-  const STATUS_AR = { 'New': 'جديد', 'Assigned': 'تم التوجيه', 'In Progress': 'جاري التنفيذ',
+  const STATUS_AR = { 'New': 'جديد', 'Assigned': 'تم التوجيه', 'In Progress': 'جارٍ التنفيذ',
                       'On Hold': 'معلّق', 'Completed': 'تم التنفيذ', 'Cancelled': 'ملغي' };
 
   /* ---------- tabs ---------- */
@@ -279,7 +279,7 @@
       .then(r => { $('chalet').value = r.chalet; $('resort').value = r.resort;
         clearLoc();
         if (r.location) { $('locLink').value = r.location;
-          setLoc('Unit location already saved ✓ · لوكيشن الوحدة متسجل', true, r.location);
+          setLoc('Unit location already saved ✓ · موقع الوحدة مسجّل مسبقًا', true, r.location);
           $('locBtn').textContent = '📍 Update location · تحديث الموقع'; } })
       .catch(showError);
   });
@@ -300,8 +300,8 @@
   function clearLoc() { $('locLink').value = ''; $('locStatus').className = 'locstatus'; $('locStatus').textContent = ''; }
 
   $('locBtn').addEventListener('click', () => {
-    if (!navigator.geolocation) return setLoc('Location not supported on this phone · الموبايل مش بيدعم اللوكيشن، الصق اللينك', false);
-    const b = $('locBtn'); b.disabled = true; b.textContent = 'Getting location… · جاري تحديد الموقع';
+    if (!navigator.geolocation) return setLoc('Location not supported on this phone · جهازك لا يدعم تحديد الموقع، يُرجى لصق رابط الموقع', false);
+    const b = $('locBtn'); b.disabled = true; b.textContent = 'Getting location… · جارٍ تحديد الموقع';
     navigator.geolocation.getCurrentPosition(pos => {
       b.disabled = false; b.textContent = '📍 Update location · تحديث الموقع';
       const lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
@@ -309,10 +309,10 @@
       $('locLink').value = link;
       setLoc('Location captured ✓ (±' + Math.round(pos.coords.accuracy) + ' m) · تم تحديد الموقع', true, link);
     }, err => {
-      b.disabled = false; b.textContent = '📍 Use my current location · خد موقعي الحالي';
+      b.disabled = false; b.textContent = '📍 Use my current location · تحديد موقعي الحالي';
       setLoc(err.code === 1
-        ? 'Location permission denied. Allow it from phone settings, or paste the link · افتح صلاحية اللوكيشن من الإعدادات أو الصق اللينك'
-        : 'Could not get location. Try again outside, or paste the link · جرّب تاني أو الصق اللينك', false);
+        ? 'Location permission denied. Allow it from phone settings, or paste the link · يُرجى السماح بالوصول إلى الموقع من إعدادات الجهاز، أو لصق رابط الموقع'
+        : 'Could not get location. Try again outside, or paste the link · تعذّر تحديد الموقع، يُرجى المحاولة مرة أخرى أو لصق رابط الموقع', false);
     }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
   });
 
@@ -328,7 +328,7 @@
 
   function compressImage(file, max, quality) {
     return new Promise((resolve, reject) => {
-      if (!file.type.startsWith('image/')) return reject(new Error('Images only · صور فقط'));
+      if (!file.type.startsWith('image/')) return reject(new Error('Images only · يُسمح بالصور فقط'));
       const reader = new FileReader();
       reader.onerror = () => reject(new Error('Cannot read the photo'));
       reader.onload = () => {
@@ -364,7 +364,7 @@
   });
 
   function send(data) {
-    $('submitButton').disabled = true; $('submitButton').textContent = 'Submitting… · جاري الإرسال';
+    $('submitButton').disabled = true; $('submitButton').textContent = 'Submitting… · جارٍ الإرسال';
     api('submitRequest', data).then(onSubmitted).catch(showError);
   }
 
@@ -374,9 +374,9 @@
       const m = $('message'); m.className = 'message warn'; m.innerHTML = '';
       m.appendChild(document.createTextNode(
         'A similar request for this chalet is already open: ' + res.requestId + ' (' + res.status + '). ' +
-        'يوجد طلب مشابه مفتوح لنفس الشاليه بالفعل. '));
+        'يوجد طلب مماثل مفتوح لنفس الوحدة. '));
       const b = document.createElement('button'); b.className = 'link'; b.type = 'button';
-      b.textContent = 'Submit anyway · إرسال على أي حال';
+      b.textContent = 'Submit anyway · الإرسال رغم ذلك';
       b.onclick = () => { hideMsg(); lastData.confirmDuplicate = true; send(lastData); };
       m.appendChild(b); scrollTop(); return;
     }
@@ -385,10 +385,10 @@
     m.appendChild(document.createElement('br'));
     const t = document.createElement('span'); t.className = 'ticket'; t.textContent = res.requestId;
     m.appendChild(t); m.appendChild(document.createElement('br'));
-    m.appendChild(document.createTextNode('Save this number to track your request · احتفظ بالرقم للمتابعة'));
+    m.appendChild(document.createTextNode('Save this number to track your request · يُرجى الاحتفاظ بهذا الرقم لمتابعة الطلب'));
     $('requestForm').reset(); $('chalet').value = ''; $('resort').value = '';
     $('subcategory').disabled = true; $('preview').style.display = 'none'; photoB64 = null;
-    clearLoc(); $('locBtn').textContent = '📍 Use my current location · خد موقعي الحالي';
+    clearLoc(); $('locBtn').textContent = '📍 Use my current location · تحديد موقعي الحالي';
     document.querySelector('input[name=urgency]').checked = true; paintUrgency();
     scrollTop();
   }
